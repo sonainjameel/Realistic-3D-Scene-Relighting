@@ -37,6 +37,41 @@
   href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="static/css/index.css">
 
+<!-- Add the custom style block here -->
+<style>
+  /* Multi-image carousel styles */
+  .carousel.results-carousel {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding: 1rem;
+  }
+
+  .carousel.results-carousel .item {
+    flex: 0 0 auto;
+    width: 45%; /* Adjust to 45% for 2 items per view */
+    scroll-snap-align: start;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0.5rem;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .carousel.results-carousel .item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+  }
+
+  .carousel.results-carousel .subtitle {
+    font-size: 1rem;
+    margin-top: 0.5rem;
+  }
+</style>
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
   <script defer src="static/js/fontawesome.all.min.js"></script>
