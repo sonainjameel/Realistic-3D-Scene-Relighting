@@ -464,6 +464,12 @@
           <img id="rgb2x-left"  alt="Input" />
           <img id="rgb2x-right" alt="Map" />
           <div class="rgb2x-handle" id="rgb2x-handle"></div>
+
+          <!-- Center chevrons -->
+          <div class="rgb2x-mid-nav">
+            <button class="rgb2x-pill" id="center-prev" aria-label="Previous">&#x2039;</button>
+            <button class="rgb2x-pill" id="center-next" aria-label="Next">&#x203A;</button>
+          </div>
         </div>
 
         <!-- Tabs -->
@@ -527,7 +533,7 @@
     width:2px; margin-left:-1px;
     background:rgba(255,255,255,.95);
     backdrop-filter: blur(4px);
-    pointer-events:none; /* purely visual */
+    pointer-events:none;
   }
   .rgb2x-handle::after{
     content:"";
@@ -538,7 +544,41 @@
     box-shadow: 0 2px 8px rgba(0,0,0,.12);
     border:1px solid rgba(0,0,0,.08);
   }
-  .tabs.is-toggle li.is-active a{ font-weight:600; }
+
+  /* Center chevrons */
+  .rgb2x-mid-nav{
+    position:absolute; left:50%; top:50%;
+    transform:translate(-50%,-50%);
+    display:flex; gap:.6rem;
+  }
+  .rgb2x-pill{
+    border:0; padding:.55rem .7rem; line-height:1; font-size:1.05rem;
+    border-radius:999px;
+    background:rgba(255,255,255,.88);
+    box-shadow:0 6px 18px rgba(0,0,0,.14);
+    cursor:pointer;
+    backdrop-filter:saturate(120%) blur(6px);
+  }
+  .rgb2x-pill:active{ transform:scale(.98); }
+
+  /* Pill/segmented tabs look */
+  .tabs.is-toggle.is-toggle-rounded{ justify-content:center; }
+  .tabs.is-toggle.is-toggle-rounded ul{ gap:.75rem; }
+  .tabs.is-toggle.is-toggle-rounded a{
+    border-radius:999px; border:1px solid rgba(0,0,0,.12);
+    padding:.6rem 1rem; background:#fff;
+    box-shadow:0 6px 18px rgba(0,0,0,.06);
+  }
+  .tabs.is-toggle.is-toggle-rounded li.is-active a{
+    background:#eef4ff; border-color:rgba(0,80,255,.18); font-weight:600; position:relative;
+  }
+  /* small circle on active tab */
+  .tabs.is-toggle.is-toggle-rounded li.is-active a::before{
+    content:""; position:absolute; left:.6rem; top:50%; transform:translateY(-50%);
+    width:18px; height:18px; border-radius:50%; background:#fff;
+    border:1px solid rgba(0,0,0,.12); box-shadow:0 2px 8px rgba(0,0,0,.08) inset;
+  }
+  .tabs.is-toggle.is-toggle-rounded li.is-active a{ padding-left:2.2rem; }
 </style>
 
 <script>
@@ -561,14 +601,18 @@
   const prevBtn   = document.getElementById("prev-obj");
   const nextBtn   = document.getElementById("next-obj");
 
+  // Center chevron buttons
+  const centerPrev = document.getElementById("center-prev");
+  const centerNext = document.getElementById("center-next");
+
   // ---------- State ----------
   let objIndex = 0;
   let map = "normal";
-  let split = 50;        // current %
-  let targetSplit = 50;  // desired %
+  let split = 50;
+  let targetSplit = 50;
 
   function imgPath(objectFolder, mapKey){
-    const enc = encodeURIComponent(objectFolder); // handles spaces
+    const enc = encodeURIComponent(objectFolder);
     return `${basePath}/${enc}/${mapKey}.png`;
   }
 
@@ -597,7 +641,7 @@
 
   // ---------- Smooth animation loop ----------
   function animate(){
-    const ease = 0.12; // smaller = smoother
+    const ease = 0.12;
     split += (targetSplit - split) * ease;
     setSplit(split);
     requestAnimationFrame(animate);
@@ -621,6 +665,19 @@
     li.addEventListener("click", ()=> pickMap(li.dataset.map));
   });
 
+  // ---------- Center chevrons navigate maps ----------
+  const tabItems = [...tabs.querySelectorAll('li')];
+  let mapIndex = tabItems.findIndex(li => li.classList.contains('is-active'));
+  centerPrev.onclick = () => {
+    mapIndex = (mapIndex - 1 + tabItems.length) % tabItems.length;
+    tabItems[mapIndex].click();
+  };
+  centerNext.onclick = () => {
+    mapIndex = (mapIndex + 1) % tabItems.length;
+    tabItems[mapIndex].click();
+  };
+  tabItems.forEach((li,i)=> li.addEventListener('click', ()=> mapIndex = i));
+
   // ---------- Object prev/next ----------
   prevBtn.onclick = ()=>{ objIndex = (objIndex-1+objects.length)%objects.length; loadImages(); };
   nextBtn.onclick = ()=>{ objIndex = (objIndex+1)%objects.length; loadImages(); };
@@ -632,7 +689,6 @@
 </script>
 <!-- ==================== /RGB2X ==================== -->
 
-<!-- ==================== /RGB2X ==================== -->
 
 
   
