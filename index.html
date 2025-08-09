@@ -450,7 +450,7 @@
 </section>
 <!-- End video carousel -->
 
-  <!-- ====================== RGB2X / Dance3DRelight ====================== -->
+<!-- ====================== RGB2X / Dance3DRelight ====================== -->
 <section class="section" id="rgb2x">
   <div class="container is-max-desktop">
     <div class="card" style="overflow:hidden;">
@@ -460,13 +460,10 @@
 
       <div class="card-content">
         <!-- Split-view -->
-        <div class="rgb2x-stage" id="rgb2x-stage" aria-label="Drag to compare">
+        <div class="rgb2x-stage" id="rgb2x-stage" aria-label="Hover to compare">
           <img id="rgb2x-left"  alt="Input" />
           <img id="rgb2x-right" alt="Map" />
-          <div class="rgb2x-handle" id="rgb2x-handle" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0">
-            <span class="icon is-small"><i class="fas fa-chevron-left"></i></span>
-            <span class="icon is-small"><i class="fas fa-chevron-right"></i></span>
-          </div>
+          <div class="rgb2x-handle" id="rgb2x-handle"></div>
         </div>
 
         <!-- Tabs -->
@@ -479,7 +476,6 @@
             <li data-map="metallness"><a>Metallness</a></li>
           </ul>
         </div>
-
 
         <!-- Object picker -->
         <div class="level mt-3">
@@ -520,23 +516,28 @@
     position:absolute; inset:0; width:100%; height:100%; object-fit:contain;
     pointer-events:none;
   }
-  /* Right image gets clipped for the split */
-  #rgb2x-right{ clip-path: inset(0 0 0 50%); transition: clip-path .06s ease-out; }
+  #rgb2x-right{
+    clip-path: inset(0 0 0 50%);
+    will-change: clip-path;
+  }
 
+  /* Thin hairline handle + small knob */
   .rgb2x-handle{
     position:absolute; top:0; bottom:0; left:50%;
-    width:56px; margin-left:-28px;
-    display:flex; align-items:center; justify-content:space-between;
-    padding:0 10px;
-    background:rgba(255,255,255,.7);
-    backdrop-filter: blur(6px);
-    border-left:1px solid rgba(0,0,0,.1);
-    border-right:1px solid rgba(0,0,0,.1);
-    cursor:ew-resize;
-    transition: background .15s;
+    width:2px; margin-left:-1px;
+    background:rgba(255,255,255,.95);
+    backdrop-filter: blur(4px);
+    pointer-events:none; /* purely visual */
   }
-  .rgb2x-handle:focus{ outline:2px solid #485fc7; }
-  .rgb2x-handle .icon{ opacity:.6; }
+  .rgb2x-handle::after{
+    content:"";
+    position:absolute; top:50%; left:50%;
+    width:18px; height:18px; margin:-9px 0 0 -9px;
+    border-radius:50%;
+    background:rgba(255,255,255,.95);
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    border:1px solid rgba(0,0,0,.08);
+  }
   .tabs.is-toggle li.is-active a{ font-weight:600; }
 </style>
 
@@ -544,10 +545,8 @@
 (function(){
   // ---------- Configuration ----------
   const objects = [
-    // Add your objects here
     { name: "White Light Input" },
-     { name: "Multicolor Light Input" },
-    // { name: "bunny" },
+    { name: "Multicolor Light Input" }
   ];
   const maps = ["normal","albedo","irradiance","roughness","metallness"];
   const basePath = "static/rgb2x";
@@ -565,28 +564,27 @@
   // ---------- State ----------
   let objIndex = 0;
   let map = "normal";
-  let split = 50; // percent
+  let split = 50;        // current %
+  let targetSplit = 50;  // desired %
 
-  function imgPath(object, mapKey){
-    // expected files: original.png + <map>.png
-    return `${basePath}/${object}/${mapKey}.png`;
+  function imgPath(objectFolder, mapKey){
+    const enc = encodeURIComponent(objectFolder); // handles spaces
+    return `${basePath}/${enc}/${mapKey}.png`;
   }
 
   function loadImages(){
-    const obj = objects[objIndex].name;
-    objTitle.textContent = obj;
-    leftImg.src  = imgPath(obj, "input");
-    leftImg.alt  = `${obj} input`;
-    rightImg.src = imgPath(obj, map);
-    rightImg.alt = `${obj} ${map}`;
+    const obj = objects[objIndex];
+    objTitle.textContent = obj.name;
+    leftImg.src  = imgPath(obj.name, "input");
+    leftImg.alt  = `${obj.name} input`;
+    rightImg.src = imgPath(obj.name, map);
+    rightImg.alt = `${obj.name} ${map}`;
   }
 
   function setSplit(p){
     split = Math.max(0, Math.min(100, p));
-    const leftPx = (split/100)*stage.clientWidth;
     handle.style.left = `${split}%`;
     rightImg.style.clipPath = `inset(0 0 0 ${split}%)`;
-    handle.setAttribute("aria-valuenow", split.toFixed(0));
   }
 
   function pickMap(newMap){
@@ -597,30 +595,26 @@
     loadImages();
   }
 
-  // ---------- Drag / keyboard ----------
-  let dragging = false;
-  function pointerX(e){
-    return (e.touches ? e.touches[0].clientX : e.clientX);
+  // ---------- Smooth animation loop ----------
+  function animate(){
+    const ease = 0.12; // smaller = smoother
+    split += (targetSplit - split) * ease;
+    setSplit(split);
+    requestAnimationFrame(animate);
   }
-  function onDown(e){ dragging = true; stage.classList.add("is-active"); onMove(e); e.preventDefault(); }
-  function onMove(e){
-    if(!dragging) return;
+  requestAnimationFrame(animate);
+
+  // ---------- Hover to move ----------
+  stage.addEventListener("mousemove", (e)=>{
     const rect = stage.getBoundingClientRect();
-    setSplit( ((pointerX(e)-rect.left)/rect.width)*100 );
-  }
-  function onUp(){ dragging = false; stage.classList.remove("is-active"); }
-
-  handle.addEventListener("mousedown", onDown);
-  window.addEventListener("mousemove", onMove);
-  window.addEventListener("mouseup", onUp);
-  handle.addEventListener("touchstart", onDown, {passive:false});
-  window.addEventListener("touchmove", onMove, {passive:false});
-  window.addEventListener("touchend", onUp);
-
-  handle.addEventListener("keydown", (e)=>{
-    if(e.key === "ArrowLeft")  setSplit(split-2);
-    if(e.key === "ArrowRight") setSplit(split+2);
+    targetSplit = ((e.clientX - rect.left) / rect.width) * 100;
   });
+  stage.addEventListener("touchmove", (e)=>{
+    const t = e.touches[0];
+    const rect = stage.getBoundingClientRect();
+    targetSplit = ((t.clientX - rect.left) / rect.width) * 100;
+  }, {passive:false});
+  stage.addEventListener("mouseleave", ()=> targetSplit = 50);
 
   // ---------- Tabs ----------
   tabs.querySelectorAll("li").forEach(li=>{
@@ -636,6 +630,8 @@
   setSplit(50);
 })();
 </script>
+<!-- ==================== /RGB2X ==================== -->
+
 <!-- ==================== /RGB2X ==================== -->
 
 
