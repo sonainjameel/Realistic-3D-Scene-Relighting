@@ -450,6 +450,194 @@
 </section>
 <!-- End video carousel -->
 
+  <!-- ====================== RGB2X / Dance3DRelight ====================== -->
+<section class="section" id="rgb2x">
+  <div class="container is-max-desktop">
+    <div class="card" style="overflow:hidden;">
+      <header class="card-header">
+        <p class="card-header-title">Dance3DRelight · RGB2X Decomposition</p>
+      </header>
+
+      <div class="card-content">
+        <!-- Split-view -->
+        <div class="rgb2x-stage" id="rgb2x-stage" aria-label="Drag to compare">
+          <img id="rgb2x-left"  alt="Input" />
+          <img id="rgb2x-right" alt="Map" />
+          <div class="rgb2x-handle" id="rgb2x-handle" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0">
+            <span class="icon is-small"><i class="fas fa-chevron-left"></i></span>
+            <span class="icon is-small"><i class="fas fa-chevron-right"></i></span>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs is-toggle is-toggle-rounded is-centered mt-4">
+          <ul id="rgb2x-tabs">
+            <li class="is-active" data-map="normal"><a>Normal</a></li>
+            <li data-map="albedo"><a>Albedo</a></li>
+            <li data-map="irradiance"><a>Irradiance</a></li>
+            <li data-map="roughness"><a>Roughness</a></li>
+            <li data-map="metallness"><a>Metallness</a></li>
+          </ul>
+        </div>
+
+
+        <!-- Object picker -->
+        <div class="level mt-3">
+          <div class="level-left">
+            <button class="button is-light" id="prev-obj" title="Previous">
+              <span class="icon"><i class="fas fa-caret-left"></i></span>
+            </button>
+          </div>
+          <div class="level-item has-text-centered">
+            <h3 class="title is-4" id="rgb2x-object">White Light Input</h3>
+          </div>
+          <div class="level-right">
+            <button class="button is-light" id="next-obj" title="Next">
+              <span class="icon"><i class="fas fa-caret-right"></i></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* Split-view layout */
+  .rgb2x-stage{
+    position:relative;
+    width:100%;
+    max-width:760px;
+    margin:0 auto;
+    aspect-ratio: 4 / 3;
+    border-radius: 16px;
+    background:#f5f5f7;
+    box-shadow: 0 10px 30px rgba(0,0,0,.06) inset;
+    overflow:hidden;
+    user-select:none;
+  }
+  .rgb2x-stage img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:contain;
+    pointer-events:none;
+  }
+  /* Right image gets clipped for the split */
+  #rgb2x-right{ clip-path: inset(0 0 0 50%); transition: clip-path .06s ease-out; }
+
+  .rgb2x-handle{
+    position:absolute; top:0; bottom:0; left:50%;
+    width:56px; margin-left:-28px;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 10px;
+    background:rgba(255,255,255,.7);
+    backdrop-filter: blur(6px);
+    border-left:1px solid rgba(0,0,0,.1);
+    border-right:1px solid rgba(0,0,0,.1);
+    cursor:ew-resize;
+    transition: background .15s;
+  }
+  .rgb2x-handle:focus{ outline:2px solid #485fc7; }
+  .rgb2x-handle .icon{ opacity:.6; }
+  .tabs.is-toggle li.is-active a{ font-weight:600; }
+</style>
+
+<script>
+(function(){
+  // ---------- Configuration ----------
+  const objects = [
+    // Add your objects here
+    { name: "White Light Input" },
+     { name: "Multicolor Light Input" },
+    // { name: "bunny" },
+  ];
+  const maps = ["normal","albedo","irradiance","roughness","metallness"];
+  const basePath = "static/rgb2x";
+
+  // ---------- Elements ----------
+  const stage     = document.getElementById("rgb2x-stage");
+  const leftImg   = document.getElementById("rgb2x-left");
+  const rightImg  = document.getElementById("rgb2x-right");
+  const handle    = document.getElementById("rgb2x-handle");
+  const tabs      = document.getElementById("rgb2x-tabs");
+  const objTitle  = document.getElementById("rgb2x-object");
+  const prevBtn   = document.getElementById("prev-obj");
+  const nextBtn   = document.getElementById("next-obj");
+
+  // ---------- State ----------
+  let objIndex = 0;
+  let map = "normal";
+  let split = 50; // percent
+
+  function imgPath(object, mapKey){
+    // expected files: original.png + <map>.png
+    return `${basePath}/${object}/${mapKey}.png`;
+  }
+
+  function loadImages(){
+    const obj = objects[objIndex].name;
+    objTitle.textContent = obj;
+    leftImg.src  = imgPath(obj, "input");
+    leftImg.alt  = `${obj} input`;
+    rightImg.src = imgPath(obj, map);
+    rightImg.alt = `${obj} ${map}`;
+  }
+
+  function setSplit(p){
+    split = Math.max(0, Math.min(100, p));
+    const leftPx = (split/100)*stage.clientWidth;
+    handle.style.left = `${split}%`;
+    rightImg.style.clipPath = `inset(0 0 0 ${split}%)`;
+    handle.setAttribute("aria-valuenow", split.toFixed(0));
+  }
+
+  function pickMap(newMap){
+    map = newMap;
+    [...tabs.children].forEach(li=>{
+      li.classList.toggle("is-active", li.dataset.map === map);
+    });
+    loadImages();
+  }
+
+  // ---------- Drag / keyboard ----------
+  let dragging = false;
+  function pointerX(e){
+    return (e.touches ? e.touches[0].clientX : e.clientX);
+  }
+  function onDown(e){ dragging = true; stage.classList.add("is-active"); onMove(e); e.preventDefault(); }
+  function onMove(e){
+    if(!dragging) return;
+    const rect = stage.getBoundingClientRect();
+    setSplit( ((pointerX(e)-rect.left)/rect.width)*100 );
+  }
+  function onUp(){ dragging = false; stage.classList.remove("is-active"); }
+
+  handle.addEventListener("mousedown", onDown);
+  window.addEventListener("mousemove", onMove);
+  window.addEventListener("mouseup", onUp);
+  handle.addEventListener("touchstart", onDown, {passive:false});
+  window.addEventListener("touchmove", onMove, {passive:false});
+  window.addEventListener("touchend", onUp);
+
+  handle.addEventListener("keydown", (e)=>{
+    if(e.key === "ArrowLeft")  setSplit(split-2);
+    if(e.key === "ArrowRight") setSplit(split+2);
+  });
+
+  // ---------- Tabs ----------
+  tabs.querySelectorAll("li").forEach(li=>{
+    li.addEventListener("click", ()=> pickMap(li.dataset.map));
+  });
+
+  // ---------- Object prev/next ----------
+  prevBtn.onclick = ()=>{ objIndex = (objIndex-1+objects.length)%objects.length; loadImages(); };
+  nextBtn.onclick = ()=>{ objIndex = (objIndex+1)%objects.length; loadImages(); };
+
+  // ---------- Init ----------
+  loadImages();
+  setSplit(50);
+})();
+</script>
+<!-- ==================== /RGB2X ==================== -->
+
 
   
 <!-- Paper poster -->
