@@ -913,17 +913,33 @@ document.addEventListener('DOMContentLoaded', function(){
   const cards    = Array.from(document.querySelectorAll('.achievement-card'));
   const wrapper  = document.querySelector('.timeline-wrapper');
 
-  // Marker positions (match your CSS left:%)
-  const pos = { march:12, april:28, may:44, june:60, july:76, august:92 };
+  // Marker positions (must match your CSS left:% values)
+  const pos = { 
+    jan: 5, 
+    feb: 15, 
+    mar: 28, 
+    apr: 40, 
+    may: 55, 
+    jun: 70, 
+    jul: 85, 
+    sep: 95 
+  };
 
   function setActive(month){
+    // highlight active marker
     markers.forEach(m => m.classList.toggle('active', m.dataset.month === month));
+
+    // show matching card
     cards.forEach(c => {
       const isActive = c.dataset.month === month;
       c.classList.toggle('active', isActive);
       c.classList.add('visible'); // reveal once
     });
-    if (pos[month] != null) progress.style.width = pos[month] + '%';
+
+    // update progress bar
+    if (pos[month] != null) {
+      progress.style.width = pos[month] + '%';
+    }
   }
 
   // Click handlers
@@ -945,34 +961,37 @@ document.addEventListener('DOMContentLoaded', function(){
   }
 
   // Pick initial milestone based on today's date
-const monthIndex = new Date().getMonth(); // 0 = Jan, 11 = Dec
-let initial;
+  const monthIndex = new Date().getMonth(); // 0 = Jan, 11 = Dec
+  let initial;
 
-// Map JS months to your roadmap milestones
-if (monthIndex === 0) {          // January
-  initial = 'jan';
-} else if (monthIndex === 1) {   // February
-  initial = 'feb';
-} else if (monthIndex === 2) {   // March
-  initial = 'mar';
-} else if (monthIndex === 3) {   // April
-  initial = 'apr';
-} else if (monthIndex === 4) {   // May
-  initial = 'may';
-} else if (monthIndex === 5) {   // June
-  initial = 'jun';
-} else if (monthIndex === 6) {   // July
-  initial = 'jul';
-} else {                         // August onward → show September defense
-  initial = 'sep';
-}
+  // Map JS months to your roadmap milestones (short keys)
+  if (monthIndex === 0) {          // January
+    initial = 'jan';
+  } else if (monthIndex === 1) {   // February
+    initial = 'feb';
+  } else if (monthIndex === 2) {   // March
+    initial = 'mar';
+  } else if (monthIndex === 3) {   // April
+    initial = 'apr';
+  } else if (monthIndex === 4) {   // May
+    initial = 'may';
+  } else if (monthIndex === 5) {   // June
+    initial = 'jun';
+  } else if (monthIndex === 6) {   // July
+    initial = 'jul';
+  } else {                         // August onward → show September defense
+    initial = 'sep';
+  }
 
-setActive(initial);
+  setActive(initial);
 
-// Keyboard navigation order
-const order = ['jan','feb','mar','apr','may','jun','jul','sep'];
+  // Keyboard navigation order
+  const order = ['jan','feb','mar','apr','may','jun','jul','sep'];
 
-  function currentKey(){ return markers.find(m => m.classList.contains('active'))?.dataset.month || initial; }
+  function currentKey(){ 
+    return markers.find(m => m.classList.contains('active'))?.dataset.month || initial; 
+  }
+
   document.addEventListener('keydown', (e)=>{
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
     const cur = currentKey();
@@ -982,6 +1001,7 @@ const order = ['jan','feb','mar','apr','may','jun','jul','sep'];
   });
 });
 </script>
+
 
   </body>
   </html>
