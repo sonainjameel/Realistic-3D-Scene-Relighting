@@ -308,73 +308,97 @@
             <div class="timeline-progress" id="timeline-progress"></div>
           </div>
           
-          <!-- Fixed Month Markers on the Line -->
-          <div class="timeline-months">
-            <div class="month-marker" data-month="march">
-              <span>Mar</span>
-            </div>
-            <div class="month-marker" data-month="april">
-              <span>Apr</span>
-            </div>
-            <div class="month-marker" data-month="may">
-              <span>May</span>
-            </div>
-            <div class="month-marker" data-month="june">
-              <span>Jun</span>
-            </div>
-            <div class="month-marker" data-month="july">
-              <span>Jul 14th</span>
-            </div>
-            <div class="month-marker" data-month="august">
-              <span>Aug 19th</span>
-            </div>
-          </div>
-          
+       <!-- Fixed Month Markers on the Line -->
+<div class="timeline-months">
+  <div class="month-marker" data-month="jan">
+    <span>Jan</span>
+  </div>
+  <div class="month-marker" data-month="feb">
+    <span>Feb</span>
+  </div>
+  <div class="month-marker" data-month="mar">
+    <span>Mar</span>
+  </div>
+  <div class="month-marker" data-month="apr">
+    <span>Apr</span>
+  </div>
+  <div class="month-marker" data-month="may">
+    <span>May</span>
+  </div>
+  <div class="month-marker" data-month="jun">
+    <span>Jun</span>
+  </div>
+  <div class="month-marker" data-month="jul">
+    <span>Jul 15</span>
+  </div>
+  <div class="month-marker" data-month="sep">
+    <span>Sep 1</span>
+  </div>
+</div>
+
           <!-- Achievement Cards Above and Below Timeline -->
-          <div class="timeline-achievements">
-            <!-- March to Mid-April: Literature Review -->
-            <div class="achievement-card above" data-month="march" style="left: 12%;">
-              <div class="card-arrow"></div>
-              <h3>Literature Review & Testing</h3>
-              <p>Comprehensive analysis of state-of-the-art methods and initial testing</p>
-            </div>
-            
-            <!-- Mid-April to Mid-May: Comparative Study -->
-            <div class="achievement-card below" data-month="april" style="left: 28%;">
-              <div class="card-arrow"></div>
-              <h3>Comparative Study</h3>
-              <p>Evaluation and comparison of methods and approaches</p>
-            </div>
-            
-            <!-- Mid-May to Mid-June: Pipeline Implementation -->
-            <div class="achievement-card above" data-month="may" style="left: 44%;">
-              <div class="card-arrow"></div>
-              <h3>Pipeline Implementation</h3>
-              <p>Development of the proposed pipeline, main contributions, and evaluation</p>
-            </div>
-            
-            <!-- Mid-June to July 14th: Thesis Writing -->
-            <div class="achievement-card below" data-month="june" style="left: 60%;">
-              <div class="card-arrow"></div>
-              <h3>Thesis Writing & Website Development</h3>
-              <p>Documentation of research findings and interactive presentation development</p>
-            </div>
-            
-            <!-- July 14th: First Draft -->
-            <div class="achievement-card above" data-month="july" style="left: 76%;">
-              <div class="card-arrow"></div>
-              <h3>First Draft Submission</h3>
-              <p>Complete thesis draft submitted for review and feedback</p>
-            </div>
-            
-            <!-- August 15th: Defense -->
-            <div class="achievement-card below" data-month="august" style="left: 92%;">
-              <div class="card-arrow"></div>
-              <h3>Thesis Defense</h3>
-              <p>Final presentation and defense of research findings</p>
-              <span class="status current">🎯 Current</span>
-            </div>
-          </div>
+<div class="timeline-achievements">
+
+  <!-- January: Literature Review -->
+  <div class="achievement-card above" data-month="jan" style="left: 5%;">
+    <div class="card-arrow"></div>
+    <h3>Literature Review</h3>
+    <p>Comprehensive study of relighting, NeRFs, Gaussian splatting, and user studies</p>
+  </div>
+
+  <!-- February: Comparative Study -->
+  <div class="achievement-card below" data-month="feb" style="left: 15%;">
+    <div class="card-arrow"></div>
+    <h3>Comparative Study</h3>
+    <p>Evaluation and comparison of state-of-the-art approaches</p>
+  </div>
+
+  <!-- March: Pipelines -->
+  <div class="achievement-card above" data-month="mar" style="left: 28%;">
+    <div class="card-arrow"></div>
+    <h3>SV-GaSRelight & Dance3DRelight</h3>
+    <p>Implementation of proposed single-view and dynamic relighting pipelines</p>
+  </div>
+
+  <!-- April: User Studies -->
+  <div class="achievement-card below" data-month="apr" style="left: 40%;">
+    <div class="card-arrow"></div>
+    <h3>User Studies</h3>
+    <p>Three perceptual studies validating realism and robustness</p>
+  </div>
+
+  <!-- May: Dataset + Tool -->
+  <div class="achievement-card above" data-month="may" style="left: 55%;">
+    <div class="card-arrow"></div>
+    <h3>Dataset & Tool</h3>
+    <p>Creation of a custom dataset and interactive evaluation platform</p>
+  </div>
+
+  <!-- June: Thesis Writing -->
+  <div class="achievement-card below" data-month="jun" style="left: 70%;">
+    <div class="card-arrow"></div>
+    <h3>Thesis Writing</h3>
+    <p>Documentation of pipelines, results, and contributions</p>
+  </div>
+
+  <!-- July 15: Final Submission -->
+  <div class="achievement-card above" data-month="jul" style="left: 85%;">
+    <div class="card-arrow"></div>
+    <h3>Final Submission</h3>
+    <p>Full thesis submitted for review</p>
+    <span class="status">📄 Submission</span>
+  </div>
+
+  <!-- September 01: Defense -->
+  <div class="achievement-card below" data-month="sep" style="left: 95%;">
+    <div class="card-arrow"></div>
+    <h3>Defense & Articles</h3>
+    <p>Final defense and submission of two articles</p>
+    <span class="status current">🎯 Current</span>
+  </div>
+
+</div>
+
         </div>
       </div>
     </div>
@@ -916,17 +940,34 @@ document.addEventListener('DOMContentLoaded', function(){
     cards.forEach(c => c.classList.add('visible'));
   }
 
-  // Pick initial month based on today's date (fallback to August if beyond July)
-  const monthIndex = new Date().getMonth(); // 0=Jan
-  const initial = monthIndex <= 2 ? 'march' :
-                  monthIndex === 3 ? 'april' :
-                  monthIndex === 4 ? 'may'   :
-                  monthIndex === 5 ? 'june'  :
-                  monthIndex === 6 ? 'july'  : 'august';
-  setActive(initial);
+  // Pick initial milestone based on today's date
+const monthIndex = new Date().getMonth(); // 0 = Jan, 11 = Dec
+let initial;
 
-  // Optional: keyboard navigation (← →)
-  const order = ['march','april','may','june','july','august'];
+// Map JS months to your roadmap milestones
+if (monthIndex === 0) {          // January
+  initial = 'jan';
+} else if (monthIndex === 1) {   // February
+  initial = 'feb';
+} else if (monthIndex === 2) {   // March
+  initial = 'mar';
+} else if (monthIndex === 3) {   // April
+  initial = 'apr';
+} else if (monthIndex === 4) {   // May
+  initial = 'may';
+} else if (monthIndex === 5) {   // June
+  initial = 'jun';
+} else if (monthIndex === 6) {   // July
+  initial = 'jul';
+} else {                         // August onward → show September defense
+  initial = 'sep';
+}
+
+setActive(initial);
+
+// Keyboard navigation order
+const order = ['jan','feb','mar','apr','may','jun','jul','sep'];
+
   function currentKey(){ return markers.find(m => m.classList.contains('active'))?.dataset.month || initial; }
   document.addEventListener('keydown', (e)=>{
     if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
